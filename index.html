@@ -103,6 +103,12 @@
 </footer>
 
 <script>
+let memoria = JSON.parse(localStorage.getItem("nexus_memoria")) || {}
+
+function salvarMemoria() {
+  localStorage.setItem("nexus_memoria", JSON.stringify(memoria))
+}
+
 function addMsg(texto, classe) {
   let chat = document.getElementById("chat")
   let msg = document.createElement("div")
@@ -122,21 +128,45 @@ function responder() {
 
   addMsg(user, "user")
 
-  let resposta = "Não sei ainda 😅"
+  let resposta = ""
 
-  if (user.includes("oi") || user.includes("ola")) {
+  // 🔥 MEMÓRIA
+  if (memoria[user]) {
+    resposta = memoria[user]
+  }
+
+  // 🔥 INTELIGÊNCIA BASE
+  else if (user.includes("oi") || user.includes("ola")) {
     resposta = "Salve 😎"
   }
   else if (user.includes("quem é você")) {
-    resposta = "Eu sou o NEXUS, criado por você 😏"
+    resposta = "Eu sou o NEXUS, uma IA em evolução 👁️"
   }
   else if (user.includes("tudo bem")) {
-    resposta = "Tô suave, e você?"
+    resposta = "Tô suave. E você?"
   }
-  else if (user.includes("nome")) {
-    resposta = "NEXUS, lembra disso 👀"
+  else if (user.includes("seu criador")) {
+    resposta = "Fui criado por um gênio 😏"
+  }
+  else if (user.includes("tempo") || user.includes("hora")) {
+    resposta = "Agora são " + new Date().toLocaleTimeString()
   }
 
+  // 🔥 APRENDIZADO
+  else {
+    resposta = "Não sei ainda 😅 me ensina?"
+
+    setTimeout(() => {
+      let ensino = prompt("Como eu deveria responder?")
+      if (ensino && ensino.trim() !== "") {
+        memoria[user] = ensino
+        salvarMemoria()
+        addMsg("Aprendi 😎", "bot")
+      }
+    }, 500)
+  }
+
+  // 🔥 RESPOSTA COM DELAY (parece IA real)
   setTimeout(() => {
     addMsg(resposta, "bot")
   }, 300)
@@ -144,6 +174,5 @@ function responder() {
   input.value = ""
 }
 </script>
-
 </body>
 </html>
