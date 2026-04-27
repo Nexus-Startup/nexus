@@ -1,111 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>NEXUS</title>
+<meta charset="UTF-8">
+<title>NEXUS AI</title>
 
-  <style>
-    body {
-      margin: 0;
-      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-      font-family: Arial, sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+<style>
+body {
+  background: #0f0f0f;
+  color: white;
+  font-family: Arial;
+  margin: 0;
+}
 
-    header {
-      padding: 15px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      background: rgba(0,0,0,0.6);
-      border-bottom: 1px solid #333;
-    }
+header {
+  text-align: center;
+  padding: 15px;
+  font-size: 20px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
 
-    #chat {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+#chat {
+  height: 75vh;
+  overflow-y: auto;
+  padding: 15px;
+}
 
-    .msg {
-      max-width: 70%;
-      padding: 12px;
-      border-radius: 12px;
-      animation: fade 0.2s ease;
-    }
+.msg {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+}
 
-    .user {
-      align-self: flex-end;
-      background: #00bcd4;
-      color: black;
-    }
+.user {
+  background: #2563eb;
+  margin-left: auto;
+}
 
-    .bot {
-      align-self: flex-start;
-      background: #2c2c2c;
-    }
+.bot {
+  background: #333;
+}
 
-    @keyframes fade {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+#inputArea {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #333;
+}
 
-    footer {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #333;
-      background: #111;
-    }
+input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  background: #1a1a1a;
+  color: white;
+}
 
-    input {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      outline: none;
-      background: #222;
-      color: white;
-    }
-
-    button {
-      margin-left: 10px;
-      padding: 12px 18px;
-      border: none;
-      border-radius: 8px;
-      background: #00bcd4;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      background: #00e5ff;
-    }
-  </style>
+button {
+  padding: 10px;
+  background: #2563eb;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+</style>
 </head>
 
 <body>
 
-<header>NEXUS AI</header>
+<header>
+NEXUS AI 👁️ — Conectando a tecnologia ao seu dia a dia
+</header>
 
 <div id="chat"></div>
 
-<footer>
-  <input id="entrada" placeholder="Fala com o NEXUS...">
+<div id="inputArea">
+  <input id="entrada" placeholder="Pergunte qualquer coisa..." />
   <button onclick="responder()">Enviar</button>
-</footer>
+</div>
 
 <script>
 let memoria = JSON.parse(localStorage.getItem("nexus_memoria")) || {}
+let nomeUsuario = localStorage.getItem("nexus_nome") || null
 
-function salvarMemoria() {
+function salvar() {
   localStorage.setItem("nexus_memoria", JSON.stringify(memoria))
 }
 
@@ -120,65 +99,111 @@ function addMsg(texto, classe) {
   chat.scrollTop = chat.scrollHeight
 }
 
-// 🔥 FUNÇÃO DE PESQUISA REAL
+// 🌐 pesquisa simples
 async function pesquisar(pergunta) {
   try {
     let url = "https://api.duckduckgo.com/?q=" + encodeURIComponent(pergunta) + "&format=json"
-
     let res = await fetch(url)
     let data = await res.json()
-
-    if (data.AbstractText) {
-      return data.AbstractText
-    } else {
-      return "Não achei algo claro 😅 tenta perguntar diferente"
-    }
-
-  } catch (e) {
-    return "Erro ao pesquisar 😢"
+    return data.AbstractText || null
+  } catch {
+    return null
   }
+}
+
+// 🧠 cérebro melhorado
+function pensar(user) {
+
+  // memória direta
+  if (memoria[user]) return memoria[user]
+
+  // nome
+  if (user.includes("meu nome é")) {
+    nomeUsuario = user.replace("meu nome é", "").trim()
+    localStorage.setItem("nexus_nome", nomeUsuario)
+    return "Prazer, " + nomeUsuario + " 😎"
+  }
+
+  if (user.includes("qual meu nome")) {
+    return nomeUsuario ? "Seu nome é " + nomeUsuario : "Você ainda não me disse seu nome 😅"
+  }
+
+  // conversa natural
+  if (user.includes("oi") || user.includes("ola")) {
+    return "E aí " + (nomeUsuario || "") + " 👋"
+  }
+
+  if (user.includes("tudo bem")) {
+    return "Tô tranquilo 😌 e você?"
+  }
+
+  if (user.includes("quem é você")) {
+    return "Sou o NEXUS, uma IA em evolução criada por você 👁️"
+  }
+
+  if (user.includes("hora")) {
+    return "Agora são " + new Date().toLocaleTimeString()
+  }
+
+  if (user.includes("data")) {
+    return "Hoje é " + new Date().toLocaleDateString()
+  }
+
+  if (user.includes("teorema")) {
+    return "Seu Teorema NEXUS busca IA eficiente, honesta e com memória infinita. Isso é bem avançado 👀"
+  }
+
+  return null
 }
 
 async function responder() {
   let input = document.getElementById("entrada")
-  let user = input.value.trim()
+  let user = input.value.toLowerCase().trim()
 
-  if (user === "") return
+  if (!user) return
 
   addMsg(user, "user")
 
-  let resposta = ""
+  let resposta = pensar(user)
 
-  // memória
-  if (memoria[user]) {
-    resposta = memoria[user]
-    addMsg(resposta, "bot")
-  }
+  if (resposta) {
+    setTimeout(() => addMsg(resposta, "bot"), 300)
+  } else {
+    addMsg("Pensando... 🧠", "bot")
 
-  // comando de pesquisa
-  else if (user.startsWith("pesquisa ")) {
-    addMsg("Pesquisando... 🔎", "bot")
+    let resultado = await pesquisar(user)
 
-    let pergunta = user.replace("pesquisa ", "")
-    let resultado = await pesquisar(pergunta)
+    if (resultado) {
+      addMsg(resultado, "bot")
+    } else {
+      addMsg("Não sei ainda 😅 me ensina?", "bot")
 
-    addMsg(resultado, "bot")
-  }
+      setTimeout(() => {
+        let ensino = prompt("O que eu deveria responder?")
 
-  // fallback
-  else {
-    resposta = "Não sei 😅 tenta usar: pesquisa sua pergunta"
-
-    addMsg(resposta, "bot")
+        if (ensino && ensino.trim()) {
+          memoria[user] = ensino
+          salvar()
+          addMsg("Aprendi 😎", "bot")
+        }
+      }, 500)
+    }
   }
 
   input.value = ""
 }
 
-// ENTER
 document.getElementById("entrada").addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
     responder()
   }
 })
+
+// mensagem inicial
+setTimeout(() => {
+  addMsg("NEXUS online 👁️ Pronto pra evoluir.", "bot")
+}, 500)
 </script>
+
+</body>
+</html>
