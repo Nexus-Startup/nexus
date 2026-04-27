@@ -120,59 +120,65 @@ function addMsg(texto, classe) {
   chat.scrollTop = chat.scrollHeight
 }
 
-function responder() {
-  let input = document.getElementById("entrada")
-  let user = input.value.toLowerCase()
+// 🔥 FUNÇÃO DE PESQUISA REAL
+async function pesquisar(pergunta) {
+  try {
+    let url = "https://api.duckduckgo.com/?q=" + encodeURIComponent(pergunta) + "&format=json"
 
-  if (user.trim() === "") return
+    let res = await fetch(url)
+    let data = await res.json()
+
+    if (data.AbstractText) {
+      return data.AbstractText
+    } else {
+      return "Não achei algo claro 😅 tenta perguntar diferente"
+    }
+
+  } catch (e) {
+    return "Erro ao pesquisar 😢"
+  }
+}
+
+async function responder() {
+  let input = document.getElementById("entrada")
+  let user = input.value.trim()
+
+  if (user === "") return
 
   addMsg(user, "user")
 
   let resposta = ""
 
-  // 🔥 MEMÓRIA
+  // memória
   if (memoria[user]) {
     resposta = memoria[user]
-  }
-
-  // 🔥 INTELIGÊNCIA BASE
-  else if (user.includes("oi") || user.includes("ola")) {
-    resposta = "Salve 😎"
-  }
-  else if (user.includes("quem é você")) {
-    resposta = "Eu sou o NEXUS, uma IA em evolução 👁️"
-  }
-  else if (user.includes("tudo bem")) {
-    resposta = "Tô suave. E você?"
-  }
-  else if (user.includes("seu criador")) {
-    resposta = "Fui criado por um gênio 😏"
-  }
-  else if (user.includes("tempo") || user.includes("hora")) {
-    resposta = "Agora são " + new Date().toLocaleTimeString()
-  }
-
-  // 🔥 APRENDIZADO
-  else {
-    resposta = "Não sei ainda 😅 me ensina?"
-
-    setTimeout(() => {
-      let ensino = prompt("Como eu deveria responder?")
-      if (ensino && ensino.trim() !== "") {
-        memoria[user] = ensino
-        salvarMemoria()
-        addMsg("Aprendi 😎", "bot")
-      }
-    }, 500)
-  }
-
-  // 🔥 RESPOSTA COM DELAY (parece IA real)
-  setTimeout(() => {
     addMsg(resposta, "bot")
-  }, 300)
+  }
+
+  // comando de pesquisa
+  else if (user.startsWith("pesquisa ")) {
+    addMsg("Pesquisando... 🔎", "bot")
+
+    let pergunta = user.replace("pesquisa ", "")
+    let resultado = await pesquisar(pergunta)
+
+    addMsg(resultado, "bot")
+  }
+
+  // fallback
+  else {
+    resposta = "Não sei 😅 tenta usar: pesquisa sua pergunta"
+
+    addMsg(resposta, "bot")
+  }
 
   input.value = ""
 }
+
+// ENTER
+document.getElementById("entrada").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    responder()
+  }
+})
 </script>
-</body>
-</html>
