@@ -79,7 +79,30 @@ function addMsg(texto, tipo) {
   chat.scrollTop = chat.scrollHeight
 }
 
-function responder() {
+function responder() { function responder() {
+  let input = document.getElementById("entrada")
+  let user = input.value.toLowerCase()
+
+  if (user.trim() === "") return
+
+  addMsg(user, "user")
+
+  let resposta = "Não sei ainda 😅"
+
+  if (user.includes("oi") || user.includes("ola")) {
+    resposta = "Salve 😎"
+  }
+  else if (user.includes("quem é você")) {
+    resposta = "Eu sou o NEXUS, criado pelo Amadeu 😏"
+  }
+  else if (user.includes("tudo bem")) {
+    resposta = "Tô suave, e você?"
+  }
+
+  addMsg(resposta, "bot")
+
+  input.value = ""
+}
   let input = document.getElementById("entrada")
   let user = input.value
 
